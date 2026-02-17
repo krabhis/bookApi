@@ -20,3 +20,8 @@ __pycache__/
 
 # Database
 *.sqlite3
+
+
+scripts/
+
+.txt

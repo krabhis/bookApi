@@ -1,38 +1,35 @@
-# # Inside main.py title
-# from fastapi import FastAPI
-# from src.books.routes import book_router
-
-# version = 'v1'
-
-# app = FastAPI(
-#     title='Bookly',
-#     description='A RESTful API for a book review web service',
-#     version=version,
-# )
-
-# app.include_router(book_router,prefix=f"/api/{version}/books", tags=['books'])  
-
-
 from fastapi import FastAPI
-from src.books.routes import book_router
 from contextlib import asynccontextmanager
 
+from src.db.main import initdb
+from src.books.routes import book_router
 
-#the lifespan event
+
+# Lifespan event (Startup & Shutdown handler)
 @asynccontextmanager
-async def lifespan(app: FastAPI):    
+async def lifespan(app: FastAPI):
+    # Startup logic
     print("Server is starting...")
-    yield
-    print("server is stopping")
+    await initdb()
+    
+    yield  # Application runs here
+    
+    # Shutdown logic
+    print("Server is stopping...")
 
 
-
+# Create FastAPI app with metadata + lifespan
 app = FastAPI(
-    lifespan=lifespan # add the lifespan event to our application
+    title="Bookly",
+    description="A RESTful API for a book review web service",
+    version="v1",
+    lifespan=lifespan
 )
 
+
+# Include router
 app.include_router(
     book_router,
-    prefix="/books",
-    tags=['books']
+    prefix="/api/v1/books",
+    tags=["books"]
 )
