@@ -1,5 +1,7 @@
 from sqlmodel import SQLModel, Field, Column
 import sqlalchemy.dialects.postgresql as pg
+from sqlalchemy import func
+from datetime import datetime
 import uuid
 
 
@@ -8,7 +10,7 @@ class User(SQLModel, table=True):
 
     uid: uuid.UUID = Field(
         sa_column=Column(
-            pg.UUID,
+            pg.UUID(as_uuid=True),
             primary_key=True,
             unique=True,
             nullable=False,
@@ -18,12 +20,19 @@ class User(SQLModel, table=True):
     )
 
     username: str
-    first_name: str = Field(nullable=True)
-    last_name: str = Field(nullable=True)
-    is_verified: bool = False
+    first_name: str | None = Field(default=None)
+    last_name: str | None = Field(default=None)
+    is_verified: bool = Field(default=False)
     email: str
     password_hash: str
-    created_at: datetime = Field(sa_column=Column(pg.TIMESTAMP, default=func.now))
+
+    created_at: datetime = Field(
+        sa_column=Column(
+            pg.TIMESTAMP(timezone=True),
+            server_default=func.now(),
+            nullable=False,
+        )
+    )
 
     def __repr__(self) -> str:
         return f"<User {self.username}>"

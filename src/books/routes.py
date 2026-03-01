@@ -1,6 +1,3 @@
-
-
-
 from fastapi import APIRouter, status, Depends
 from fastapi.exceptions import HTTPException
 from src.books.schemas import Book, BookUpdateModel, BookCreateModel
@@ -16,7 +13,7 @@ book_service = BookService()
 @book_router.get("/", response_model=List[Book])
 async def get_all_books(session: AsyncSession = Depends(get_session)):
     books = await book_service.get_all_books(session)
-    return books
+    return books  
 
 
 @book_router.post("/", status_code=status.HTTP_201_CREATED, response_model=Book)
